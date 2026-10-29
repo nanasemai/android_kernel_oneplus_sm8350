@@ -172,6 +172,14 @@ camera-$(CONFIG_SPECTRA_SENSOR) += \
 	cam_sensor_module/cam_sensor_utils/cam_sensor_util.o \
 	cam_sensor_module/cam_res_mgr/cam_res_mgr.o
 
+# Droidian bring-up (GCC 13): the vendor OIS firmware translation units use
+# floating point, which conflicts with the arm64 kernel default
+# -mgeneral-regs-only. Drop that flag for the two files that need FP so the
+# module links; the OIS calibration commands are not used during bring-up.
+CFLAGS_REMOVE_oplus/cam_sensor_module/cam_ois/onsemi_fw/LC898124/HighLevelCmd.o := -mgeneral-regs-only
+CFLAGS_REMOVE_oplus/cam_sensor_module/cam_ois/onsemi_fw/LC898124/E2PromCmd.o := -mgeneral-regs-only
+CFLAGS_REMOVE_oplus/cam_sensor_module/cam_ois/onsemi_fw/LC898128/PhoneUpdate.o := -mgeneral-regs-only
+
 camera-$(CONFIG_SPECTRA_OPLUS) += \
 	oplus/cam_sensor_module/cam_ois/onsemi_fw/fw_download_interface.o \
 	oplus/cam_sensor_module/cam_ois/onsemi_fw/LC898124/HighLevelCmd.o \

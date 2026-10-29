@@ -1,0 +1,15 @@
+# vendor_boot ramdisk 模块清单说明
+
+`droidian/modules.load` 由 linux-packaging-snippets 直接解析，**不能包含注释或空行**
+（脚本会把每一行当作 `find -name` 的模式，注释会破坏 xargs 调用）。
+
+当前 OP9 配置（lahaina-qgki_defconfig + droidian 片段）中，initramfs 阶段需要的
+存储/文件系统/设备映射驱动全部内建：
+
+- UFS: CONFIG_SCSI_UFSHCD(_PLATFORM)/CONFIG_SCSI_UFS_QCOM = y
+- PHY: CONFIG_PHY_QCOM_UFS = y
+- ext4 / f2fs / dm-crypt / dm-thin / overlayfs = y
+
+因此 `modules.load` 只保留 `rdbg.ko`，用于验证 vendor_boot ramdisk 生成链路。
+若后续把某项改为 =m（例如 UFS 或 display），必须把对应 .ko 加入该文件，并确认
+`out/KERNEL_OBJ/kernel-modules/lib/modules/<ver>/modules.dep` 中存在。

@@ -1,0 +1,8 @@
+linux-android-oneplus-oneplus9 (5.4-191-1) unstable; urgency=medium
+
+  * Initial Droidian kernel package for OnePlus 9 (lemonade, SM8350)
+  * Based on LineageOS 19.1 kernel 5.4.191 @ 23d0e922c
+  * boot header v3 + vendor_boot + separate dtbo
+  * Built with GCC 13 cross toolchain
+
+ -- Droidian OnePlus 9 port <nanasemai@users.noreply.github.com>  Thu, 29 Oct 2026 21:00:00 +0000

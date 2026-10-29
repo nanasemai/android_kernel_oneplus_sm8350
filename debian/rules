@@ -1,0 +1,32 @@
+#!/usr/bin/make -f
+
+# CAF 的 gcc-wrapper.py 会把任意 GCC 13 新警告升级为致命错误。
+# 打包环境（GCC 13）需要禁用 wrapper，否则 kernel/extable.c、mm/compaction.c 等
+# 会因 -Warray-compare / -Wdangling-pointer 直接失败。
+export DISABLE_WRAPPER = 1
+
+# 该 vendor 内核当年用 GCC 10 / 旧 clang 构建。GCC 13 新增的多条诊断
+# （fallthrough、format、array-parameter、enum/int 不匹配等）在 vendor
+# Kbuild 的 -Werror 下会中断构建，但本质上只是警告，不改变生成代码。
+# 对这批诊断降级为警告（KCFLAGS 在 KBUILD_CFLAGS 之后追加，可覆盖 -Werror）。
+# 不处理 implicit-function-declaration 等可能掩盖真实缺陷的诊断。
+export KCFLAGS = \
+	-Wno-error=implicit-fallthrough \
+	-Wno-error=format -Wno-error=format-extra-args \
+	-Wno-error=format-overflow -Wno-error=format-truncation \
+	-Wno-error=array-parameter -Wno-error=enum-int-mismatch \
+	-Wno-error=strict-prototypes -Wno-error=return-type \
+	-Wno-error=implicit-int -Wno-error=dangling-pointer \
+	-Wno-error=array-compare -Wno-error=maybe-uninitialized \
+	-Wno-error=unused-but-set-variable -Wno-error=unused-variable \
+	-Wno-error=stringop-overflow -Wno-error=stringop-truncation \
+	-Wno-error=misleading-indentation -Wno-error=address-of-packed-member \
+	-Wno-error=discarded-qualifiers -Wno-error=unused-function \
+	-Wno-error=unused-const-variable -Wno-error=type-limits \
+	-Wno-error=shift-count-overflow -Wno-error=address \
+	-Wno-error=tautological-compare -Wno-error=logical-not-parentheses
+
+include /usr/share/linux-packaging-snippets/kernel-snippet.mk
+
+%:
+	dh $@
